@@ -21,8 +21,8 @@ class InstallModuleConfigurationCommand extends Command
 {
     const MESSAGE_INSTALLATION_WAS_SUCCESSFUL = 'Module configuration has been installed.';
     const MESSAGE_INSTALLATION_FAILED = 'An error occurred while installing module configuration.';
-    const MESSAGE_TARGET_PATH_IS_REQUIRED = 'The given module source path is not inside the shop modules ' .
-    'directory. Please provide a second parameter with the modules ' .
+    const MESSAGE_TARGET_PATH_IS_REQUIRED = 'The given source path is not inside the shop modules ' .
+    'directory. Please provide additionally a ' .
     'target path inside the shop modules directory.';
 
     /**
@@ -59,20 +59,20 @@ class InstallModuleConfigurationCommand extends Command
                 'oe:module:install-configuration'
             )
             ->setDescription(
-                'Install module configuration into project configuration file.'
-                . 'Module configuration already present in the project configuration file will be overwritten.'
+                'Install module configuration into project configuration. '
+                . 'Module configuration for this module that already exists will be overwritten.'
             )
             ->addArgument(
                 'module-source-path',
                 InputArgument::REQUIRED,
-                'Path to module source, e.g. source/modules/vendor/my_module;'
-                . ' In combination with the second parameter (module-target-path), it is possible to use the path'
-                . ' that is not in source/modules directory, e.g. vendor/my_vendor/my_module'
+                'Path to module source directory, e.g. vendor/my_vendor/my_module.'
+                . ' If the module source path is inside the directory source/modules, e.g. source/modules/my_vendor/my_module'
+                . ' then the parameter module-target-path is optional.'
             )
             ->addArgument(
                 'module-target-path',
                 InputArgument::OPTIONAL,
-                'Path to module target, e.g. source/modules/vendor/my_module'
+                'Path to module target directory, e.g. source/modules/vendor/my_module'
             );
     }
 
