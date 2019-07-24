@@ -7,6 +7,7 @@
 namespace OxidEsales\EshopCommunity\Internal\Module\Configuration\DataMapper;
 
 use OxidEsales\EshopCommunity\Internal\Module\Configuration\DataObject\ClassExtensionsChain;
+use OxidEsales\EshopCommunity\Internal\Module\Configuration\DataObject\ModuleConfiguration;
 use OxidEsales\EshopCommunity\Internal\Module\Configuration\DataObject\ShopConfiguration;
 
 /**
@@ -68,7 +69,8 @@ class ShopConfigurationDataMapper implements ShopConfigurationDataMapperInterfac
     private function setModulesConfiguration(ShopConfiguration $shopConfiguration, array $modulesData)
     {
         foreach ($modulesData as $moduleId => $moduleData) {
-            $moduleConfiguration = $this->moduleConfigurationDataMapper->fromData($moduleData);
+            $moduleConfiguration = new ModuleConfiguration();
+            $moduleConfiguration = $this->moduleConfigurationDataMapper->fromData($moduleConfiguration, $moduleData);
             $moduleConfiguration->setId($moduleId);
 
             $shopConfiguration->addModuleConfiguration($moduleConfiguration);

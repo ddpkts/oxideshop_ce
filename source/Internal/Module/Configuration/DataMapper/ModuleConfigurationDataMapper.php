@@ -11,7 +11,6 @@ use OxidEsales\EshopCommunity\Internal\Module\Configuration\DataObject\ModuleCon
 use OxidEsales\EshopCommunity\Internal\Module\Configuration\DataObject\ModuleConfiguration\TemplateBlock;
 use OxidEsales\EshopCommunity\Internal\Module\Configuration\DataObject\ModuleConfiguration\Template;
 use OxidEsales\EshopCommunity\Internal\Module\Configuration\DataObject\ModuleConfiguration\ClassExtension;
-use OxidEsales\EshopCommunity\Internal\Module\Configuration\DataObject\ModuleConfiguration\Controller;
 use OxidEsales\EshopCommunity\Internal\Module\Configuration\DataObject\ModuleConfiguration\SmartyPluginDirectory;
 use OxidEsales\EshopCommunity\Internal\Module\Configuration\DataObject\ModuleConfiguration\ClassWithoutNamespace;
 use OxidEsales\EshopCommunity\Internal\Module\Configuration\DataObject\ModuleConfiguration\Event;
@@ -22,6 +21,9 @@ use OxidEsales\EshopCommunity\Internal\Module\Setting\Setting;
  */
 class ModuleConfigurationDataMapper implements ModuleConfigurationDataMapperInterface
 {
+    /** @var ModuleConfigurationDataMapperInterface[] */
+    private $dataMappers = [];
+
     /**
      * @param ModuleConfiguration $configuration
      *
@@ -46,12 +48,15 @@ class ModuleConfigurationDataMapper implements ModuleConfigurationDataMapperInte
         if ($configuration->hasTemplates()) {
             $data[ModuleConfigurationMappingKeys::TEMPLATES] =  $this->getTemplates($configuration);
         }
-        if ($configuration->hasClassExtensions()) {
-            $data[ModuleConfigurationMappingKeys::CLASS_EXTENSIONS] = $this->getClassExtension($configuration);
+
+        $moduleConfigurationData = [[]];
+
+        foreach ($this->dataMappers as $dataMapper) {
+            $moduleConfigurationData[] = $dataMapper->toData($configuration);
         }
-        if ($configuration->hasControllers()) {
-            $data[ModuleConfigurationMappingKeys::CONTROLLERS] = $this->getController($configuration);
-        }
+
+        $data = array_merge(array_merge(...$moduleConfigurationData), $data);
+
         if ($configuration->hasSmartyPluginDirectories()) {
             $data[ModuleConfigurationMappingKeys::SMARTY_PLUGIN_DIRECTORIES] =
                 $this->getSmartyPluginDirectory($configuration);
@@ -81,9 +86,8 @@ class ModuleConfigurationDataMapper implements ModuleConfigurationDataMapperInte
      *
      * @return ModuleConfiguration
      */
-    public function fromData(array $data): ModuleConfiguration
+    public function fromData(ModuleConfiguration $moduleConfiguration, array $data): ModuleConfiguration
     {
-        $moduleConfiguration = new ModuleConfiguration();
         $moduleConfiguration
             ->setId($data['id'])
             ->setPath($data['path'])
@@ -97,16 +101,14 @@ class ModuleConfigurationDataMapper implements ModuleConfigurationDataMapperInte
             ->setUrl($data['url'])
             ->setEmail($data['email']);
 
-        if (isset($data[ModuleConfigurationMappingKeys::CLASS_EXTENSIONS])) {
-            $this->setClassExtension($moduleConfiguration, $data[ModuleConfigurationMappingKeys::CLASS_EXTENSIONS]);
+        foreach ($this->dataMappers as $dataMapper) {
+            $moduleConfiguration = $dataMapper->fromData($moduleConfiguration, $data);
         }
+
         if (isset($data[ModuleConfigurationMappingKeys::TEMPLATES])) {
             $this->setTemplates($moduleConfiguration, $data[ModuleConfigurationMappingKeys::TEMPLATES]);
         }
 
-        if (isset($data[ModuleConfigurationMappingKeys::CONTROLLERS])) {
-            $this->setController($moduleConfiguration, $data[ModuleConfigurationMappingKeys::CONTROLLERS]);
-        }
 
         if (isset($data[ModuleConfigurationMappingKeys::SMARTY_PLUGIN_DIRECTORIES])) {
             $this->setSmartyPluginDirectory(
@@ -135,6 +137,11 @@ class ModuleConfigurationDataMapper implements ModuleConfigurationDataMapperInte
         return $moduleConfiguration;
     }
 
+    public function addDataMapper(ModuleConfigurationDataMapperInterface $dataMapper)
+    {
+        $this->dataMappers[] = $dataMapper;
+    }
+
     /**
      * @param ModuleConfiguration $moduleConfiguration
      * @param array $extension
@@ -147,24 +154,6 @@ class ModuleConfigurationDataMapper implements ModuleConfigurationDataMapperInte
                 $moduleClass
             ));
         }
-    }
-
-    /**
-     * @param ModuleConfiguration $configuration
-     *
-     * @return array
-     */
-    private function getClassExtension(ModuleConfiguration $configuration): array
-    {
-        $extensions = [];
-
-        if ($configuration->hasClassExtensions()) {
-            foreach ($configuration->getClassExtensions() as $extension) {
-                $extensions[$extension->getShopClassNamespace()] = $extension->getModuleExtensionClassNamespace();
-            }
-        }
-
-        return $extensions;
     }
 
     /**
@@ -199,37 +188,7 @@ class ModuleConfigurationDataMapper implements ModuleConfigurationDataMapperInte
         return $templates;
     }
 
-    /**
-     * @param ModuleConfiguration $moduleConfiguration
-     * @param array               $controllers
-     */
-    private function setController(ModuleConfiguration $moduleConfiguration, array $controllers)
-    {
-        foreach ($controllers as $id => $controllerClassNamespace) {
-            $moduleConfiguration->addController(new Controller(
-                $id,
-                $controllerClassNamespace
-            ));
-        }
-    }
 
-    /**
-     * @param ModuleConfiguration $configuration
-     *
-     * @return array
-     */
-    private function getController(ModuleConfiguration $configuration): array
-    {
-        $controllers = [];
-
-        if ($configuration->hasControllers()) {
-            foreach ($configuration->getControllers() as $controller) {
-                $controllers[$controller->getId()] = $controller->getControllerClassNameSpace();
-            }
-        }
-
-        return $controllers;
-    }
 
     /**
      * @param ModuleConfiguration $moduleConfiguration

@@ -6,8 +6,12 @@
 
 namespace OxidEsales\EshopCommunity\Tests\Unit\Internal\Module\Configuration\DataMapper;
 
+use OxidEsales\EshopCommunity\Internal\Module\Configuration\DataMapper\ModuleConfiguration\ClassExtensionsDataMapper;
+use OxidEsales\EshopCommunity\Internal\Module\Configuration\DataMapper\ModuleConfiguration\ControllersDataMapper;
 use OxidEsales\EshopCommunity\Internal\Module\Configuration\DataMapper\ModuleConfigurationDataMapper;
+use OxidEsales\EshopCommunity\Internal\Module\Configuration\DataMapper\ModuleConfigurationDataMapperInterface;
 use OxidEsales\EshopCommunity\Internal\Module\Configuration\DataMapper\ModuleConfigurationMappingKeys;
+use OxidEsales\EshopCommunity\Internal\Module\Configuration\DataObject\ModuleConfiguration;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -54,8 +58,11 @@ class ModuleConfigurationDataMapperTest extends TestCase
         ];
 
         $moduleConfigurationDataMapper = new ModuleConfigurationDataMapper();
+        $moduleConfigurationDataMapper->addDataMapper(new ClassExtensionsDataMapper());
 
-        $moduleConfiguration = $moduleConfigurationDataMapper->fromData($configurationData);
+        $moduleConfiguration = new ModuleConfiguration();
+
+        $moduleConfiguration = $moduleConfigurationDataMapper->fromData($moduleConfiguration, $configurationData);
 
         $expectedData = [
             'id'          => 'moduleId',
@@ -91,5 +98,36 @@ class ModuleConfigurationDataMapperTest extends TestCase
             $expectedData,
             $moduleConfigurationDataMapper->toData($moduleConfiguration)
         );
+    }
+
+    /**
+     * @dataProvider moduleConfigurationDataProvider
+     */
+    public function testToDataAndFromData(array $data, ModuleConfigurationDataMapperInterface $dataMapper)
+    {
+
+        $moduleConfiguration = new ModuleConfiguration();
+        $moduleConfiguration = $dataMapper->fromData($moduleConfiguration, $data);
+
+        $this->assertEquals(
+            $data,
+            $dataMapper->toData($moduleConfiguration)
+        );
+    }
+
+    public function moduleConfigurationDataProvider()
+    {
+        return [
+            [
+                'data' => [
+                    ModuleConfigurationMappingKeys::CONTROLLERS => [
+                        'controller1' => \MyVendor\MyController\Controller1::class,
+                        'controller2' => \MyVendor\MyController\Controller2::class
+                    ]
+                ],
+                'dataMapper' => new ControllersDataMapper()
+
+            ]
+        ];
     }
 }
