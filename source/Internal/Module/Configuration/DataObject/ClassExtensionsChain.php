@@ -89,7 +89,7 @@ class ClassExtensionsChain implements \IteratorAggregate
     /**
      * @param ClassExtension $extension
      */
-    private function addExtensionToChain(ClassExtension $extension): void
+    public function addExtensionToChain(ClassExtension $extension): void
     {
         if (array_key_exists($extension->getShopClassNamespace(), $this->chain)) {
             array_push(

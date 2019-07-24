@@ -417,6 +417,22 @@ class ModuleConfiguration
     }
 
     /**
+     * @param string $shopClassNamespace
+     *
+     * @return bool
+     */
+    public function extendsShopClass(string $shopClassNamespace): bool
+    {
+        foreach ($this->getClassExtensions() as $classExtension) {
+            if ($classExtension->getShopClassNamespace() === $shopClassNamespace) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * @param Controller $controller
      *
      * @return $this
