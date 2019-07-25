@@ -18,12 +18,18 @@ services:
     class: Symfony\Component\Config\Definition\NodeInterface
     factory: 'OxidEsales\EshopCommunity\Internal\Module\Configuration\Definition\TreeBuilderFactoryInterface:create'
 
+  Symfony\Component\Config\Definition\NodeInterface:
+    alias: oxid_esales.module.configuration.node
+
   OxidEsales\EshopCommunity\Internal\Module\Configuration\Definition\TreeBuilderFactoryInterface:
     class: OxidEsales\EshopCommunity\Internal\Module\Configuration\Definition\TreeBuilderFactory
 
   oxid_esales.module.configuration.project_configuration_yaml_file_locator:
     class: Symfony\Component\Config\FileLocator
     public: false
+
+  Symfony\Component\Config\FileLocatorInterface:
+    alias: oxid_esales.module.configuration.project_configuration_yaml_file_locator
 
   OxidEsales\EshopCommunity\Internal\Module\Configuration\DataMapper\ProjectConfigurationDataMapperInterface:
     class: OxidEsales\EshopCommunity\Internal\Module\Configuration\DataMapper\ProjectConfigurationDataMapper
@@ -56,3 +62,6 @@ services:
   OxidEsales\EshopCommunity\Internal\Module\Configuration\Cache\Cache:
     class: OxidEsales\EshopCommunity\Internal\Module\Configuration\Cache\ClassPropertyShopConfigurationCache
     public: false
+
+  OxidEsales\EshopCommunity\Internal\Module\Configuration\Cache\ShopConfigurationCacheInterface:
+    alias: OxidEsales\EshopCommunity\Internal\Module\Configuration\Cache\Cache

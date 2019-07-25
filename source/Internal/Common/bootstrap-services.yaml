@@ -5,11 +5,17 @@ services:
     arguments:
       - '@oxid_esales.common.storage.flock_store'
 
+  Symfony\Component\Lock\Factory:
+    alias: oxid_esales.common.storage.flock_store_lock_factory
+
   oxid_esales.common.storage.flock_store:
     class: Symfony\Component\Lock\Store\FlockStore
 
   oxid_esales.symfony.file_system:
     class: Symfony\Component\Filesystem\Filesystem
+
+  Symfony\Component\Filesystem\Filesystem:
+    alias: oxid_esales.symfony.file_system
 
   OxidEsales\EshopCommunity\Internal\Common\FileSystem\FinderFactoryInterface:
     class: OxidEsales\EshopCommunity\Internal\Common\FileSystem\FinderFactory

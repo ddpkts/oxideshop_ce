@@ -169,7 +169,7 @@ class YamlFileStorageTest extends TestCase
     private function getLockFactoryFromContainer(): Factory
     {
         /** @var Factory $lockFactory */
-        $lockFactory = $this->get('oxid_esales.common.storage.flock_store_lock_factory');
+        $lockFactory = $this->get(\Symfony\Component\Lock\Factory::class);
 
         return $lockFactory;
     }

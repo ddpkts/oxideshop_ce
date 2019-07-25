@@ -108,5 +108,8 @@ services:
   oxid_esales.module.setup.class_extension_chain_service:
     class: OxidEsales\EshopCommunity\Internal\Module\Setup\Service\ClassExtensionChainService
 
+  OxidEsales\EshopCommunity\Internal\Module\Setup\Service\ExtensionChainServiceInterface:
+    alias: oxid_esales.module.setup.class_extension_chain_service
+
   OxidEsales\EshopCommunity\Internal\Module\Setup\Service\ActiveClassExtensionChainResolverInterface:
     class: OxidEsales\EshopCommunity\Internal\Module\Setup\Service\ActiveClassExtensionChainResolver

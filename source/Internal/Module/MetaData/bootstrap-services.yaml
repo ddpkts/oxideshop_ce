@@ -76,6 +76,9 @@ services:
   oxid_esales.module.metadata.datamapper.metadatamapper:
     class: OxidEsales\EshopCommunity\Internal\Module\MetaData\DataMapper\MetaDataMapper
 
+  OxidEsales\EshopCommunity\Internal\Module\MetaData\DataMapper\MetaDataToModuleConfigurationDataMapperInterface:
+    alias: oxid_esales.module.metadata.datamapper.metadatamapper
+
   OxidEsales\EshopCommunity\Internal\Module\MetaData\Validator\MetaDataSchemaValidatorInterface:
     class: OxidEsales\EshopCommunity\Internal\Module\MetaData\Validator\MetaDataSchemaValidator
 
